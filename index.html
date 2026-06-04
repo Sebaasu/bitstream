@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETN 703 — Teoría de Telecomunicaciones I</title>
+  <meta name="description" content="Simulador de detección y corrección de errores en transmisiones digitales. Proyecto final ETN 703 — Universidad Mayor de San Andrés." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --c-bg:        #0d1117;
+      --c-surface:   #161b22;
+      --c-surface2:  #1c2230;
+      --c-border:    #30363d;
+      --c-accent:    #3b82f6;
+      --c-accent2:   #06b6d4;
+      --c-green:     #10b981;
+      --c-red:       #ef4444;
+      --c-yellow:    #f59e0b;
+      --c-text:      #e6edf3;
+      --c-text-muted:#8b949e;
+      --c-input-bg:  #0d1117;
+
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+
+      --shadow-glow: 0 0 24px rgba(59,130,246,0.15);
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+      --transition:  all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--c-bg);
+      color: var(--c-text);
+      min-height: 100vh;
+      line-height: 1.6;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 110%, rgba(6,182,212,0.07) 0%, transparent 50%);
+    }
+
+    /* ============================================================
+       LAYOUT WRAPPER
+    ============================================================ */
+    .app-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: linear-gradient(135deg, rgba(22,27,34,0.95) 0%, rgba(28,34,48,0.95) 100%);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-lg);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--c-accent), var(--c-accent2), var(--c-green));
+    }
+
+    .header-logo {
+      width: 72px;
+      height: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+
+    .header-logo.etn {
+      width: 64px;
+    }
+
+    .header-info {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-info .uni {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--c-accent);
+      letter-spacing: 0.02em;
+    }
+
+    .header-info .course {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--c-text);
+      margin: 2px 0;
+    }
+
+    .header-info .meta {
+      font-size: 0.82rem;
+      color: var(--c-text-muted);
+      line-height: 1.8;
+      margin-top: 4px;
+    }
+
+    .header-info .meta span {
+      color: var(--c-accent2);
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       SECTION CARDS
+    ============================================================ */
+    .card {
+      background: linear-gradient(135deg, rgba(22,27,34,0.9) 0%, rgba(28,34,48,0.9) 100%);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+
+    .card-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--c-accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 14px;
+      background: linear-gradient(180deg, var(--c-accent), var(--c-accent2));
+      border-radius: 2px;
+    }
+
+    /* ============================================================
+       FORM GRID
+    ============================================================ */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--c-text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    input[type="text"],
+    select {
+      background: var(--c-input-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-sm);
+      color: var(--c-text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      width: 100%;
+      outline: none;
+      transition: var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--c-text-muted);
+      opacity: 0.6;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: var(--c-surface);
+    }
+
+    /* Checkbox toggle */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .toggle-row:hover {
+      background: rgba(239,68,68,0.1);
+      border-color: rgba(239,68,68,0.4);
+    }
+
+    .toggle-row input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--c-border);
+      border-radius: 4px;
+      background: var(--c-input-bg);
+      cursor: pointer;
+      transition: var(--transition);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .toggle-row input[type="checkbox"]:checked {
+      background: var(--c-red);
+      border-color: var(--c-red);
+    }
+
+    .toggle-row input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .toggle-label {
+      font-size: 0.88rem;
+      color: var(--c-text);
+    }
+
+    /* ============================================================
+       BUTTON
+    ============================================================ */
+    .btn-transmit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent2) 100%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      letter-spacing: 0.04em;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-transmit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .btn-transmit:hover::before { opacity: 1; }
+    .btn-transmit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.4); }
+    .btn-transmit:active { transform: translateY(0); }
+
+    .btn-transmit .icon {
+      font-size: 1.1rem;
+      transition: transform 0.3s;
+    }
+
+    .btn-transmit:hover .icon { transform: translateX(4px); }
+
+    /* ============================================================
+       TABS
+    ============================================================ */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--c-border);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--c-text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: -1px;
+    }
+
+    .tab-btn:hover { color: var(--c-text); }
+
+    .tab-btn.active {
+      color: var(--c-accent);
+      border-bottom-color: var(--c-accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       CANVAS SIGNAL
+    ============================================================ */
+    .canvas-container {
+      background: #090d14;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-label {
+      position: absolute;
+      top: 8px; right: 12px;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--c-text-muted);
+      letter-spacing: 0.08em;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 180px;
+    }
+
+    .canvas-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 180px;
+      color: var(--c-text-muted);
+      font-size: 0.82rem;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       TERMINAL / ANALYSIS OUTPUT
+    ============================================================ */
+    .terminal {
+      background: #050810;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-sm);
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      min-height: 200px;
+      max-height: 340px;
+      overflow-y: auto;
+      color: var(--c-text);
+    }
+
+    .terminal::-webkit-scrollbar { width: 6px; }
+    .terminal::-webkit-scrollbar-track { background: transparent; }
+    .terminal::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
+
+    .log-line { display: flex; gap: 10px; padding: 2px 0; }
+    .log-prompt { color: var(--c-accent); flex-shrink: 0; }
+    .log-ok { color: var(--c-green); }
+    .log-err { color: var(--c-red); }
+    .log-warn { color: var(--c-yellow); }
+    .log-info { color: var(--c-accent2); }
+    .log-muted { color: var(--c-text-muted); }
+    .log-val { color: var(--c-text); }
+
+    .terminal-empty {
+      color: var(--c-text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 168px;
+      font-size: 0.8rem;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       BADGE / STATUS
+    ============================================================ */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: var(--r-sm);
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      transition: var(--transition);
+    }
+
+    .status-bar.ok {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--c-green);
+    }
+
+    .status-bar.error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--c-red);
+    }
+
+    .status-bar.idle {
+      background: rgba(139,148,158,0.08);
+      border: 1px solid var(--c-border);
+      color: var(--c-text-muted);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ============================================================
+       SIGNAL ANIMATION OVERLAY
+    ============================================================ */
+    @keyframes signalDraw {
+      from { clip-path: inset(0 100% 0 0); }
+      to   { clip-path: inset(0 0% 0 0); }
+    }
+
+    .signal-animate {
+      animation: signalDraw 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      text-align: center;
+      color: var(--c-text-muted);
+      font-size: 0.78rem;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--c-border);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .header-logo { width: 52px; }
+      .header-logo.etn { width: 48px; }
+      .header-info .uni { font-size: 0.85rem; }
+      .header-info .course { font-size: 0.95rem; }
+      header { padding: 16px; gap: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-wrapper">
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header>
+      <img src="UMSA_logo.png" alt="Logo Universidad Mayor de San Andrés" class="header-logo" id="logo-umsa" />
+
+      <div class="header-info">
+        <div class="uni">Universidad Mayor de San Andrés</div>
+        <div class="course">Teoría de Telecomunicaciones I — ETN 703</div>
+        <div class="meta">
+          Facultad de Ingeniería · Ingeniería Electrónica<br />
+          Docente: <span>Ing. Jhonny Wilder Cala Vargas</span><br />
+          Estudiante: <span>Univ. Herrera Tola Gabriel Sebastián</span>
+        </div>
+      </div>
+
+      <img src="ETN_logo.png" alt="Logo ETN" class="header-logo etn" id="logo-etn" />
+    </header>
+
+    <!-- ═══════════════ CONFIG ═══════════════ -->
+    <section class="card" aria-labelledby="config-title">
+      <h2 class="card-title" id="config-title">Configuración de Transmisión</h2>
+
+      <div class="form-grid">
+
+        <div class="form-group full-width">
+          <label for="input-datos">Datos a transmitir (binario)</label>
+          <input
+            type="text"
+            id="input-datos"
+            placeholder="Ej: 10110100"
+            maxlength="64"
+            autocomplete="off"
+            spellcheck="false"
+            pattern="[01]+"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="select-metodo">Método de detección / corrección</label>
+          <select id="select-metodo">
+            <option value="" disabled selected>— Seleccionar —</option>
+            <option value="VRC">VRC — Verificación de Redundancia Vertical</option>
+            <option value="LRC">LRC — Verificación de Redundancia Longitudinal</option>
+            <option value="CRC">CRC — Verificación por Redundancia Cíclica</option>
+            <option value="Checksum">Checksum</option>
+            <option value="Hamming">Hamming (corrección de 1 bit)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="select-codigo">Código de línea</label>
+          <select id="select-codigo">
+            <option value="" disabled selected>— Seleccionar —</option>
+            <option value="NRZ-L">NRZ-L</option>
+            <option value="NRZ-I">NRZ-I</option>
+            <option value="AMI">AMI</option>
+            <option value="MLT-3">MLT-3</option>
+            <option value="Manchester">Manchester</option>
+            <option value="Manchester Diferencial">Manchester Diferencial</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="toggle-row" for="check-error">
+            <input type="checkbox" id="check-error" />
+            <span class="toggle-label">⚡ Simular error aleatorio en la transmisión</span>
+          </label>
+        </div>
+
+        <div class="form-group full-width">
+          <button class="btn-transmit" id="btn-transmitir" onclick="transmitir()">
+            <span class="icon">→</span>
+            Transmitir Datos
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════ RESULTADOS ═══════════════ -->
+    <section class="card" aria-labelledby="results-title">
+      <h2 class="card-title" id="results-title">Resultados de la Transmisión</h2>
+
+      <!-- Status bar -->
+      <div class="status-bar idle" id="status-bar">
+        <div class="status-dot"></div>
+        <span id="status-text">Esperando datos...</span>
+      </div>
+
+      <!-- Tabs -->
+      <nav class="tabs" role="tablist" aria-label="Resultados">
+        <button class="tab-btn active" id="tab-tx-btn" role="tab" aria-selected="true"  aria-controls="tab-tx"  onclick="switchTab('tx')">📡 Señal Transmitida</button>
+        <button class="tab-btn"        id="tab-rx-btn" role="tab" aria-selected="false" aria-controls="tab-rx"  onclick="switchTab('rx')">📥 Señal Recibida</button>
+        <button class="tab-btn"        id="tab-an-btn" role="tab" aria-selected="false" aria-controls="tab-an"  onclick="switchTab('an')">🔍 Análisis de Error</button>
+      </nav>
+
+      <!-- Tab: Señal Transmitida -->
+      <div class="tab-panel active" id="tab-tx" role="tabpanel" aria-labelledby="tab-tx-btn">
+        <div class="canvas-container">
+          <span class="canvas-label" id="label-tx">TX</span>
+          <div class="canvas-placeholder" id="placeholder-tx">
+            <span>📡</span> Ingresa datos y presiona Transmitir
+          </div>
+          <canvas id="canvas-tx" style="display:none;" aria-label="Señal Transmitida"></canvas>
+        </div>
+      </div>
+
+      <!-- Tab: Señal Recibida -->
+      <div class="tab-panel" id="tab-rx" role="tabpanel" aria-labelledby="tab-rx-btn">
+        <div class="canvas-container">
+          <span class="canvas-label" id="label-rx">RX</span>
+          <div class="canvas-placeholder" id="placeholder-rx">
+            <span>📥</span> Ingresa datos y presiona Transmitir
+          </div>
+          <canvas id="canvas-rx" style="display:none;" aria-label="Señal Recibida"></canvas>
+        </div>
+      </div>
+
+      <!-- Tab: Análisis -->
+      <div class="tab-panel" id="tab-an" role="tabpanel" aria-labelledby="tab-an-btn">
+        <div class="terminal" id="terminal">
+          <div class="terminal-empty">
+            <span>🖥</span> El análisis aparecerá aquí tras transmitir
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      ETN 703 — Teoría de Telecomunicaciones I &nbsp;·&nbsp; UMSA Facultad de Ingeniería &nbsp;·&nbsp; 2025
+    </footer>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       JAVASCRIPT — Toda la lógica portada de procesador.py
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+  'use strict';
+
+  // ─────────────────────────────────────────────────────────────
+  // MÉTODOS DE DETECCIÓN / CORRECCIÓN
+  // ─────────────────────────────────────────────────────────────
+
+  /** VRC — Paridad vertical (par) */
+  function aplicarVRC(bits) {
+    const unos = [...bits].filter(b => b === '1').length;
+    return bits + (unos % 2 === 0 ? '0' : '1');
+  }
+
+  /** LRC — Paridad longitudinal por bloques de 8 bits */
+  function aplicarLRC(bits) {
+    let bloques = [];
+    for (let i = 0; i < bits.length; i += 8) {
+      bloques.push(bits.slice(i, i + 8));
+    }
+    const maxLen = Math.max(...bloques.map(b => b.length));
+    bloques = bloques.map(b => b.padEnd(maxLen, '0'));
+
+    let lrc = '';
+    for (let i = 0; i < maxLen; i++) {
+      const col = bloques.map(b => b[i]);
+      const paridad = col.filter(c => c === '1').length % 2;
+      lrc += String(paridad);
+    }
+    return bloques.join('') + lrc;
+  }
+
+  /** CRC — Verificación por Redundancia Cíclica (generador '1101') */
+  function aplicarCRC(bits, generador = '1101') {
+    const bitsExt = (bits + '0'.repeat(generador.length - 1)).split('');
+    const gen     = generador.split('');
+
+    for (let i = 0; i < bits.length; i++) {
+      if (bitsExt[i] === '1') {
+        for (let j = 0; j < gen.length; j++) {
+          bitsExt[i + j] = bitsExt[i + j] !== gen[j] ? '1' : '0';
+        }
+      }
+    }
+    const residuo = bitsExt.slice(-(generador.length - 1)).join('');
+    return bits + residuo;
+  }
+
+  /** Checksum — Complemento a 1 con bloques de 8 bits */
+  function aplicarChecksum(bits, tamBloque = 8) {
+    let bloques = [];
+    for (let i = 0; i < bits.length; i += tamBloque) {
+      bloques.push(bits.slice(i, i + tamBloque));
+    }
+    bloques = bloques.map(b => b.padEnd(tamBloque, '0'));
+
+    let suma = bloques.reduce((acc, b) => acc + parseInt(b, 2), 0);
+
+    const max = (1 << tamBloque) - 1;
+    while (suma > max) {
+      suma = (suma & max) + (suma >> tamBloque);
+    }
+
+    const checksum = (~suma) & max;
+    return bloques.join('') + checksum.toString(2).padStart(tamBloque, '0');
+  }
+
+  /** Hamming encoder (LSB a la derecha, igual que Python) */
+  function hammingEncoder(bits) {
+    const bitsRev = bits.split('').reverse();
+    const datos   = bitsRev.map(Number);
+    let n = datos.length, r = 0;
+    while ((1 << r) < n + r + 1) r++;
+
+    const hamming  = [];
+    let posData = 0;
+    for (let i = 1; i <= n + r; i++) {
+      hamming.push(((i & (i - 1)) === 0) ? 0 : datos[posData]);
+      if ((i & (i - 1)) !== 0) posData++;
+    }
+
+    for (let i = 0; i < r; i++) {
+      const mask = 1 << i;
+      hamming[mask - 1] = 0;
+      for (let j = mask - 1; j < hamming.length; j += mask * 2) {
+        for (let k = j; k < Math.min(j + mask, hamming.length); k++) {
+          hamming[mask - 1] ^= hamming[k];
+        }
+      }
+    }
+    return hamming.join('').split('').reverse().join('');
+  }
+
+  /** Hamming decoder — retorna {errorPos, corregido, datos} */
+  function hammingDecoder(bits) {
+    const bitsInv = bits.split('').reverse();
+    const hamming  = bitsInv.map(Number);
+    let r = 0;
+    while ((1 << r) < hamming.length) r++;
+
+    let errorPos = 0;
+    for (let i = 0; i < r; i++) {
+      const mask = 1 << i;
+      let parity = 0;
+      for (let j = mask - 1; j < hamming.length; j += mask * 2) {
+        for (let k = j; k < Math.min(j + mask, hamming.length); k++) {
+          parity ^= hamming[k];
+        }
+      }
+      if (parity) errorPos += mask;
+    }
+
+    const hammingCorr = [...hamming];
+    if (errorPos > 0) hammingCorr[errorPos - 1] ^= 1;
+
+    let datos = hammingCorr
+      .filter((_, idx) => (idx + 1) & idx)
+      .map(String).join('');
+    datos = datos.split('').reverse().join('');
+
+    const corregido = hammingCorr.map(String).join('').split('').reverse().join('');
+    return { errorPos, corregido, datos };
+  }
+
+  // Dispatcher principal
+  function aplicarMetodo(bits, metodo) {
+    switch (metodo) {
+      case 'VRC':      return aplicarVRC(bits);
+      case 'LRC':      return aplicarLRC(bits);
+      case 'CRC':      return aplicarCRC(bits);
+      case 'Checksum': return aplicarChecksum(bits);
+      case 'Hamming':  return hammingEncoder(bits);
+      default:         return bits;
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // ERROR ALEATORIO
+  // ─────────────────────────────────────────────────────────────
+  function agregarError(bits) {
+    if (!bits) return bits;
+    const arr = bits.split('');
+    const pos = Math.floor(Math.random() * arr.length);
+    arr[pos] = arr[pos] === '0' ? '1' : '0';
+    return arr.join('');
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // DETECCIÓN DE ERROR
+  // ─────────────────────────────────────────────────────────────
+  function detectarError(bits, metodo) {
+    try {
+      switch (metodo.toUpperCase()) {
+        case 'VRC': {
+          const res = aplicarVRC(bits).slice(-1);
+          return res === '0' ? 'No se detectaron errores' : 'Error detectado';
+        }
+        case 'LRC': {
+          const lrc = aplicarLRC(bits).slice(-8);
+          return lrc.includes('1') ? 'Error detectado' : 'No se detectaron errores';
+        }
+        case 'CRC': {
+          const rem = aplicarCRC(bits).slice(-3);
+          return rem !== '000' ? 'Error detectado' : 'No se detectaron errores';
+        }
+        case 'CHECKSUM': {
+          const cs = aplicarChecksum(bits).slice(-8);
+          return cs.includes('1') ? 'Error detectado' : 'No se detectaron errores';
+        }
+        case 'HAMMING': {
+          const { errorPos, corregido } = hammingDecoder(bits);
+          return errorPos
+            ? `Error detectado en posición ${errorPos} → Corregido: ${corregido}`
+            : 'No se detectaron errores';
+        }
+        default: return 'Método no válido';
+      }
+    } catch (e) {
+      return `Error al procesar: ${e.message}`;
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // EXTRACCIÓN DE INFORMACIÓN
+  // ─────────────────────────────────────────────────────────────
+  function extraerInformacion(bits, metodo) {
+    try {
+      switch (metodo.toUpperCase()) {
+        case 'VRC':      return bits.slice(0, -1);
+        case 'LRC':      return bits.slice(0, -8);
+        case 'CRC':      return bits.slice(0, -3);
+        case 'CHECKSUM': return bits.slice(0, -8);
+        case 'HAMMING':  return hammingDecoder(bits).datos;
+        default:         return '';
+      }
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // DIBUJO DE SEÑAL EN CANVAS
+  // ─────────────────────────────────────────────────────────────
+  const MLT3_STATE = { nivel: 0, etapa: 0 };
+
+  function resetMLT3() { MLT3_STATE.nivel = 0; MLT3_STATE.etapa = 0; }
+
+  function dibujarSenal(bits, codigo, canvasEl) {
+    const W = canvasEl.offsetWidth || 800;
+    const H = 180;
+    canvasEl.width  = W * window.devicePixelRatio;
+    canvasEl.height = H * window.devicePixelRatio;
+    canvasEl.style.height = H + 'px';
+
+    const ctx = canvasEl.getContext('2d');
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    // Background
+    ctx.fillStyle = '#090d14';
+    ctx.fillRect(0, 0, W, H);
+
+    const PAD_L = 40, PAD_R = 16, PAD_T = 24, PAD_B = 32;
+    const plotW = W - PAD_L - PAD_R;
+    const plotH = H - PAD_T - PAD_B;
+    const n     = bits.length;
+    const bw    = plotW / n;           // bit width in px
+    const midY  = PAD_T + plotH / 2;  // y=0
+    const scaleY = plotH / 2 * 0.85;  // amplitude
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(48,54,61,0.7)';
+    ctx.lineWidth   = 1;
+    [-1, 0, 1].forEach(level => {
+      const y = midY - level * scaleY;
+      ctx.beginPath();
+      ctx.moveTo(PAD_L, y);
+      ctx.lineTo(PAD_L + plotW, y);
+      ctx.stroke();
+    });
+
+    // Y-axis labels
+    ctx.fillStyle = '#8b949e';
+    ctx.font = `${9 * window.devicePixelRatio / window.devicePixelRatio}px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'right';
+    [{ lbl: '+1', v: 1 }, { lbl: '0', v: 0 }, { lbl: '−1', v: -1 }].forEach(({ lbl, v }) => {
+      ctx.fillText(lbl, PAD_L - 6, midY - v * scaleY + 4);
+    });
+
+    // Compute signal points
+    let pts = [];
+    let nivelAnterior = -1;
+    let invertido = true;
+    let ultimoNivel = -1;
+    resetMLT3();
+
+    for (let i = 0; i < n; i++) {
+      const bit = bits[i];
+      const x0  = PAD_L + i * bw;
+      const x1  = PAD_L + (i + 1) * bw;
+
+      if (codigo === 'NRZ-L') {
+        const nivel = bit === '1' ? 1 : -1;
+        pts.push([x0, nivel], [x1, nivel]);
+
+      } else if (codigo === 'NRZ-I') {
+        if (bit === '1') nivelAnterior = -nivelAnterior;
+        pts.push([x0, nivelAnterior], [x1, nivelAnterior]);
+
+      } else if (codigo === 'AMI') {
+        let nivel;
+        if (bit === '1') { ultimoNivel *= -1; nivel = ultimoNivel; }
+        else { nivel = 0; }
+        pts.push([x0, nivel], [x1, nivel]);
+
+      } else if (codigo === 'MLT-3') {
+        if (bit === '1') {
+          MLT3_STATE.etapa = (MLT3_STATE.etapa + 1) % 4;
+          MLT3_STATE.nivel = [0, 1, 0, -1][MLT3_STATE.etapa];
+        }
+        pts.push([x0, MLT3_STATE.nivel], [x1, MLT3_STATE.nivel]);
+
+      } else if (codigo === 'Manchester') {
+        const xm = x0 + bw / 2;
+        if (bit === '1') {
+          pts.push([x0, -1], [xm, -1], [xm, 1], [x1, 1]);
+        } else {
+          pts.push([x0, 1], [xm, 1], [xm, -1], [x1, -1]);
+        }
+
+      } else if (codigo === 'Manchester Diferencial') {
+        const xm = x0 + bw / 2;
+        if (bit === '1') invertido = !invertido;
+        if (invertido) {
+          pts.push([x0, -1], [xm, -1], [xm, 1], [x1, 1]);
+        } else {
+          pts.push([x0, 1], [xm, 1], [xm, -1], [x1, -1]);
+        }
+      }
+    }
+
+    // Draw signal path (step function)
+    ctx.beginPath();
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin  = 'miter';
+    ctx.shadowColor  = 'rgba(59,130,246,0.5)';
+    ctx.shadowBlur   = 6;
+
+    if (pts.length > 0) {
+      ctx.moveTo(pts[0][0], midY - pts[0][1] * scaleY);
+      for (let i = 1; i < pts.length; i++) {
+        // Vertical segment if same x as previous
+        if (pts[i][0] === pts[i - 1][0]) {
+          ctx.lineTo(pts[i][0], midY - pts[i][1] * scaleY);
+        } else {
+          ctx.lineTo(pts[i][0], midY - pts[i - 1][1] * scaleY);
+          ctx.lineTo(pts[i][0], midY - pts[i][1]     * scaleY);
+        }
+      }
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // X-axis bit labels
+    ctx.fillStyle = '#8b949e';
+    ctx.textAlign = 'center';
+    ctx.font = `10px 'JetBrains Mono', monospace`;
+    for (let i = 0; i < n; i++) {
+      const x = PAD_L + i * bw + bw / 2;
+      ctx.fillStyle = bits[i] === '1' ? '#60a5fa' : '#6b7280';
+      ctx.fillText(bits[i], x, H - PAD_B + 16);
+    }
+
+    // X-axis tick marks
+    ctx.strokeStyle = 'rgba(48,54,61,0.5)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= n; i++) {
+      const x = PAD_L + i * bw;
+      ctx.beginPath();
+      ctx.moveTo(x, PAD_T + plotH);
+      ctx.lineTo(x, PAD_T + plotH + 4);
+      ctx.stroke();
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // TERMINAL / LOG
+  // ─────────────────────────────────────────────────────────────
+  function clearTerminal() {
+    const t = document.getElementById('terminal');
+    t.innerHTML = '';
+  }
+
+  function log(text, cls = 'log-val') {
+    const t = document.getElementById('terminal');
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-prompt">›</span><span class="${cls}">${escHtml(text)}</span>`;
+    t.appendChild(line);
+    t.scrollTop = t.scrollHeight;
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // STATUS BAR
+  // ─────────────────────────────────────────────────────────────
+  function setStatus(msg, tipo = 'idle') {
+    const bar  = document.getElementById('status-bar');
+    const text = document.getElementById('status-text');
+    bar.className = `status-bar ${tipo}`;
+    text.textContent = msg;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // TABS
+  // ─────────────────────────────────────────────────────────────
+  function switchTab(id) {
+    ['tx', 'rx', 'an'].forEach(t => {
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === id);
+      const btn = document.getElementById(`tab-${t}-btn`);
+      btn.classList.toggle('active', t === id);
+      btn.setAttribute('aria-selected', t === id);
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // MOSTRAR / OCULTAR CANVAS
+  // ─────────────────────────────────────────────────────────────
+  function showCanvas(id, show) {
+    document.getElementById(`canvas-${id}`).style.display = show ? 'block' : 'none';
+    document.getElementById(`placeholder-${id}`).style.display = show ? 'none' : 'flex';
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // ACCIÓN PRINCIPAL
+  // ─────────────────────────────────────────────────────────────
+  function transmitir() {
+    const datos  = document.getElementById('input-datos').value.trim();
+    const metodo = document.getElementById('select-metodo').value;
+    const codigo = document.getElementById('select-codigo').value;
+    const error  = document.getElementById('check-error').checked;
+
+    // Validaciones
+    if (!datos) {
+      setStatus('⚠ Ingresa datos binarios para transmitir', 'error');
+      return;
+    }
+    if (!/^[01]+$/.test(datos)) {
+      setStatus('⚠ Los datos solo deben contener 0s y 1s', 'error');
+      return;
+    }
+    if (!metodo) {
+      setStatus('⚠ Selecciona un método de detección/corrección', 'error');
+      return;
+    }
+    if (!codigo) {
+      setStatus('⚠ Selecciona un código de línea', 'error');
+      return;
+    }
+
+    clearTerminal();
+
+    try {
+      // 1. Codificación
+      const codificado = aplicarMetodo(datos, metodo);
+      log(`Datos originales:      ${datos}`, 'log-muted');
+      log(`Método aplicado:       ${metodo}`, 'log-info');
+      log(`Código de línea:       ${codigo}`, 'log-info');
+      log(`Código generado (TX):  ${codificado}`, 'log-ok');
+
+      // 2. Dibujar TX
+      const canvasTX = document.getElementById('canvas-tx');
+      showCanvas('tx', true);
+      document.getElementById('label-tx').textContent = `TX · ${codigo}`;
+      dibujarSenal(codificado, codigo, canvasTX);
+
+      // 3. Canal con/sin error
+      let recibido = codificado;
+      let posError = null;
+
+      if (error) {
+        const antes = recibido;
+        recibido = agregarError(recibido);
+        // Encontrar posición del error
+        for (let i = 0; i < antes.length; i++) {
+          if (antes[i] !== recibido[i]) { posError = i; break; }
+        }
+        log(`― Error introducido en posición ${posError}: ${antes} → ${recibido}`, 'log-warn');
+      } else {
+        log(`― Canal limpio (sin error)`, 'log-muted');
+      }
+
+      log(`Señal recibida (RX):   ${recibido}`, error ? 'log-err' : 'log-ok');
+
+      // 4. Dibujar RX
+      const canvasRX = document.getElementById('canvas-rx');
+      showCanvas('rx', true);
+      document.getElementById('label-rx').textContent = `RX · ${codigo}`;
+      dibujarSenal(recibido, codigo, canvasRX);
+
+      // 5. Detección / corrección
+      const deteccion = detectarError(recibido, metodo);
+      const hayError  = deteccion.toLowerCase().includes('error detectado');
+      log(`Detección de error:    ${deteccion}`, hayError ? 'log-err' : 'log-ok');
+
+      if (hayError && metodo === 'Hamming') {
+        const { corregido, datos: datosCorr } = hammingDecoder(recibido);
+        log(`Corregido (Hamming):   ${corregido}`, 'log-ok');
+        log(`Datos recuperados:     ${datosCorr}`, 'log-ok');
+      }
+
+      // 6. Extraer información
+      const info = extraerInformacion(recibido, metodo);
+      log(`Información extraída:  ${info}`, 'log-ok');
+
+      // Status
+      const coincide = info === datos;
+      if (!hayError) {
+        setStatus('✅ Transmisión exitosa — No se detectaron errores', 'ok');
+      } else if (metodo === 'Hamming') {
+        setStatus('🔧 Error detectado y corregido por Hamming', 'ok');
+      } else {
+        setStatus('❌ Error detectado en la transmisión', 'error');
+      }
+
+      switchTab('tx');
+
+    } catch (e) {
+      log(`Error inesperado: ${e.message}`, 'log-err');
+      setStatus(`⚠ Error: ${e.message}`, 'error');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // ENTER KEY para transmitir
+  // ─────────────────────────────────────────────────────────────
+  document.getElementById('input-datos').addEventListener('keydown', e => {
+    if (e.key === 'Enter') transmitir();
+  });
+
+  // Validar input en tiempo real — solo permitir 0 y 1
+  document.getElementById('input-datos').addEventListener('input', function () {
+    this.value = this.value.replace(/[^01]/g, '');
+  });
+
+  // Redibujar canvas al cambiar tamaño de ventana
+  window.addEventListener('resize', () => {
+    const canvasTX = document.getElementById('canvas-tx');
+    const canvasRX = document.getElementById('canvas-rx');
+    // Solo redibujar si hay señal visible
+    if (canvasTX.style.display !== 'none') canvasTX.dispatchEvent(new Event('redraw'));
+    if (canvasRX.style.display !== 'none') canvasRX.dispatchEvent(new Event('redraw'));
+  });
+  </script>
+</body>
+</html>
