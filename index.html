@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="UMSA_logo.png" />
 
   <style>
     /* ============================================================
@@ -532,6 +533,210 @@
       .header-info .course { font-size: 0.95rem; }
       header { padding: 16px; gap: 12px; }
     }
+
+    /* ============================================================
+       EXPLANATION PANEL
+    ============================================================ */
+    .explanation-card {
+      border-color: rgba(59,130,246,0.25);
+    }
+
+    details.exp-section {
+      margin-bottom: 12px;
+    }
+
+    details.exp-section summary {
+      cursor: pointer;
+      padding: 11px 16px;
+      background: rgba(59,130,246,0.07);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: var(--r-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--c-accent);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition);
+      user-select: none;
+    }
+    details.exp-section summary::-webkit-details-marker { display: none; }
+
+    details.exp-section summary:hover {
+      background: rgba(59,130,246,0.13);
+      border-color: rgba(59,130,246,0.4);
+    }
+
+    details.exp-section[open] summary {
+      border-radius: var(--r-sm) var(--r-sm) 0 0;
+      border-bottom-color: transparent;
+    }
+
+    .exp-arrow {
+      font-size: 0.6rem;
+      transition: transform 0.22s;
+      flex-shrink: 0;
+    }
+    details.exp-section[open] .exp-arrow { transform: rotate(90deg); }
+
+    .exp-body {
+      background: rgba(9,13,20,0.7);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-top: none;
+      border-radius: 0 0 var(--r-sm) var(--r-sm);
+      padding: 20px;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .exp-text {
+      font-size: 0.84rem;
+      color: var(--c-text-muted);
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+    .exp-text strong { color: var(--c-text); }
+    .exp-text em { color: var(--c-accent2); font-style: normal; font-weight: 500; }
+
+    /* Step rows */
+    .step-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(48,54,61,0.4);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .step-row:last-child { border-bottom: none; }
+    .step-label { color: var(--c-text-muted); min-width: 190px; flex-shrink: 0; font-size: 0.76rem; }
+    .step-val { color: var(--c-text); word-break: break-all; }
+    .step-highlight { color: var(--c-yellow); font-weight: 600; }
+    .step-ok { color: var(--c-green); font-weight: 600; word-break: break-all; }
+    .step-err { color: var(--c-red); font-weight: 600; word-break: break-all; }
+
+    /* Bit display with D/P badges */
+    .bit-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 12px 0;
+      align-items: flex-end;
+    }
+
+    .bit-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .bit-val {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .bit-val.data    { background: rgba(16,185,129,0.14); color: var(--c-green);  border: 1px solid rgba(16,185,129,0.3); }
+    .bit-val.parity  { background: rgba(59,130,246,0.14); color: var(--c-accent); border: 1px solid rgba(59,130,246,0.3); }
+    .bit-val.checkbit{ background: rgba(245,158,11,0.14); color: var(--c-yellow); border: 1px solid rgba(245,158,11,0.3); }
+    .bit-val.err-bit { background: rgba(239,68,68,0.18);  color: var(--c-red);    border: 1px solid rgba(239,68,68,0.4); }
+
+    .bit-pos   { font-size: 0.62rem; color: var(--c-text-muted); font-family: 'JetBrains Mono', monospace; }
+    .bit-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.04em; }
+    .bit-badge.d { color: var(--c-green); }
+    .bit-badge.p { color: var(--c-accent); }
+
+    /* Hamming table */
+    .hamming-wrap { overflow-x: auto; margin-top: 12px; }
+
+    .hamming-table {
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    .hamming-table th {
+      background: rgba(59,130,246,0.12);
+      color: var(--c-accent);
+      font-weight: 600;
+      padding: 7px 12px;
+      text-align: center;
+      border: 1px solid var(--c-border);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+    }
+    .hamming-table td {
+      padding: 6px 12px;
+      text-align: center;
+      border: 1px solid var(--c-border);
+      color: var(--c-text);
+    }
+    .hamming-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .hamming-table .type-p { color: var(--c-accent); font-weight: 700; background: rgba(59,130,246,0.09) !important; }
+    .hamming-table .type-d { color: var(--c-green);  font-weight: 600; background: rgba(16,185,129,0.06) !important; }
+    .hamming-table .bit-error { color: var(--c-red) !important; font-weight: 700; }
+    .hamming-table .row-label { color: var(--c-text-muted); font-size: 0.72rem; text-align: left; padding-left: 10px; }
+
+    /* LRC grid */
+    .lrc-grid { margin: 12px 0; overflow-x: auto; }
+    .lrc-row  { display: flex; gap: 2px; margin-bottom: 2px; align-items: center; }
+    .lrc-cell {
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .lrc-cell.one   { background: rgba(59,130,246,0.18); color: var(--c-accent); }
+    .lrc-cell.zero  { background: rgba(255,255,255,0.04); color: var(--c-text-muted); }
+    .lrc-cell.p1    { background: rgba(245,158,11,0.22); color: var(--c-yellow); font-weight: 700; }
+    .lrc-cell.p0    { background: rgba(245,158,11,0.07); color: var(--c-yellow); }
+    .lrc-lbl { width: 54px; text-align: right; padding-right: 6px; color: var(--c-text-muted); font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+    .lrc-sep { border-top: 1px solid var(--c-border); margin: 4px 0 4px 60px; }
+
+    /* CRC steps */
+    .crc-steps {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: rgba(9,13,20,0.9);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    .crc-line { display: flex; gap: 10px; padding: 2px 0; align-items: baseline; }
+    .crc-lbl  { color: var(--c-text-muted); font-size: 0.72rem; min-width: 90px; flex-shrink: 0; }
+    .crc-bits { letter-spacing: 0.14em; color: var(--c-text); }
+    .crc-res  { letter-spacing: 0.14em; color: var(--c-accent2); }
+    .crc-fin  { letter-spacing: 0.14em; color: var(--c-green); font-weight: 700; }
+    .crc-sep  { border-top: 1px solid var(--c-border); margin: 6px 0; }
+
+    /* Parity coverage chip */
+    .coverage-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
+    }
+    .coverage-chip {
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--c-accent2);
+    }
+    .coverage-chip .chip-label { color: var(--c-accent); font-weight: 700; margin-right: 4px; }
   </style>
 </head>
 
@@ -664,6 +869,12 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- ═══════════════ EXPLANATION PANEL ═══════════════ -->
+    <section class="card explanation-card" id="explanation-panel" style="display:none;" aria-labelledby="exp-title">
+      <h2 class="card-title" id="exp-title">📖 Explicación del Método</h2>
+      <div id="explanation-content"></div>
     </section>
 
     <footer>
@@ -1164,6 +1375,9 @@
         setStatus('❌ Error detectado en la transmisión', 'error');
       }
 
+      // 7. Mostrar panel de explicación
+      updateExplanation(datos, metodo, codigo, codificado, recibido, error);
+
       switchTab('tx');
 
     } catch (e) {
@@ -1183,6 +1397,448 @@
   document.getElementById('input-datos').addEventListener('input', function () {
     this.value = this.value.replace(/[^01]/g, '');
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // PANEL DE EXPLICACIÓN
+  // ─────────────────────────────────────────────────────────────
+
+  function makeDetails(summaryEmoji, summaryText, bodyHtml, open = true) {
+    return `
+      <details class="exp-section" ${open ? 'open' : ''}>
+        <summary><span class="exp-arrow">▶</span>${summaryEmoji} ${summaryText}</summary>
+        <div class="exp-body">${bodyHtml}</div>
+      </details>`;
+  }
+
+  function updateExplanation(datos, metodo, codigo, codificado, recibido, tieneError) {
+    const panel   = document.getElementById('explanation-panel');
+    const content = document.getElementById('explanation-content');
+    panel.style.display = 'block';
+
+    let html = '';
+    switch (metodo) {
+      case 'VRC':      html = explainVRC(datos, codificado);                            break;
+      case 'LRC':      html = explainLRC(datos, codificado);                            break;
+      case 'CRC':      html = explainCRC(datos, codificado);                            break;
+      case 'Checksum': html = explainChecksum(datos, codificado);                       break;
+      case 'Hamming':  html = explainHamming(datos, codificado, recibido, tieneError);  break;
+    }
+    html += explainLineCodigo(codificado, codigo);
+    content.innerHTML = html;
+
+    // Scroll suave al panel
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
+  }
+
+  /* ── VRC ── */
+  function explainVRC(datos, codificado) {
+    const unos = [...datos].filter(b => b === '1').length;
+    const parityBit = codificado.slice(-1);
+
+    let bitsHtml = '<div class="bit-display">';
+    for (let i = 0; i < datos.length; i++) {
+      bitsHtml += `<div class="bit-cell">
+        <div class="bit-val data">${datos[i]}</div>
+        <div class="bit-pos">${i + 1}</div>
+        <div class="bit-badge d">D</div>
+      </div>`;
+    }
+    bitsHtml += `<div style="display:flex;align-items:center;color:var(--c-text-muted);font-size:1.1rem;padding:0 4px;align-self:center">|</div>`;
+    bitsHtml += `<div class="bit-cell">
+      <div class="bit-val checkbit">${parityBit}</div>
+      <div class="bit-pos">${datos.length + 1}</div>
+      <div class="bit-badge p">P</div>
+    </div></div>`;
+
+    const body = `
+      <p class="exp-text">El <strong>VRC (Vertical Redundancy Check)</strong> añade un único <em>bit de paridad</em> al final de la trama. Se elige para que el número total de 1s sea <strong>par</strong> (paridad par).</p>
+      <div class="step-row"><span class="step-label">Datos originales:</span><span class="step-val">${datos}</span></div>
+      <div class="step-row"><span class="step-label">Número de 1s:</span><span class="step-highlight">${unos}</span><span style="color:var(--c-text-muted);font-size:0.78rem"> → ${unos % 2 === 0 ? 'ya es par' : 'impar → hay que agregar 1'}</span></div>
+      <div class="step-row"><span class="step-label">Bit de paridad añadido:</span><span class="step-highlight">${parityBit}</span></div>
+      <div class="step-row"><span class="step-label">Código final (TX):</span><span class="step-ok">${codificado}</span></div>
+      ${bitsHtml}
+      <p style="font-size:0.76rem;color:var(--c-text-muted);margin-top:8px">🟢 D = bit de dato &nbsp;|&nbsp; 🟡 P = bit de paridad</p>`;
+
+    return makeDetails('🔢', '¿Cómo funciona el VRC?', body);
+  }
+
+  /* ── LRC ── */
+  function explainLRC(datos, codificado) {
+    let bloques = [];
+    for (let i = 0; i < datos.length; i += 8) bloques.push(datos.slice(i, i + 8));
+    const maxLen = Math.max(...bloques.map(b => b.length));
+    bloques = bloques.map(b => b.padEnd(maxLen, '0'));
+
+    let lrc = '';
+    for (let i = 0; i < maxLen; i++) {
+      const col = bloques.map(b => b[i]);
+      lrc += String(col.filter(c => c === '1').length % 2);
+    }
+
+    // Build LRC grid
+    let gridHtml = '<div class="lrc-grid">';
+    bloques.forEach((bloque, bi) => {
+      gridHtml += `<div class="lrc-row"><span class="lrc-lbl">Bloque ${bi + 1}</span>`;
+      for (const bit of bloque) {
+        gridHtml += `<span class="lrc-cell ${bit === '1' ? 'one' : 'zero'}">${bit}</span>`;
+      }
+      gridHtml += '</div>';
+    });
+    gridHtml += '<div class="lrc-sep"></div>';
+    gridHtml += `<div class="lrc-row"><span class="lrc-lbl" style="color:var(--c-yellow)">LRC</span>`;
+    for (const bit of lrc) {
+      gridHtml += `<span class="lrc-cell ${bit === '1' ? 'p1' : 'p0'}">${bit}</span>`;
+    }
+    gridHtml += '</div></div>';
+
+    const body = `
+      <p class="exp-text">El <strong>LRC (Longitudinal Redundancy Check)</strong> divide los datos en bloques de 8 bits y aplica <em>paridad XOR por columna</em>. El resultado es un byte adicional al final de la trama que actúa como fila de verificación.</p>
+      <div class="step-row"><span class="step-label">Datos originales:</span><span class="step-val">${datos}</span></div>
+      <div class="step-row"><span class="step-label">Bloques de 8 bits:</span><span class="step-val">${bloques.join(' | ')}</span></div>
+      <p style="font-size:0.78rem;color:var(--c-text-muted);margin:12px 0 6px">XOR columna a columna:</p>
+      ${gridHtml}
+      <div class="step-row" style="margin-top:10px"><span class="step-label">Byte LRC calculado:</span><span class="step-highlight">${lrc}</span></div>
+      <div class="step-row"><span class="step-label">Código final (TX):</span><span class="step-ok">${codificado}</span></div>`;
+
+    return makeDetails('📊', '¿Cómo funciona el LRC?', body);
+  }
+
+  /* ── CRC ── */
+  function explainCRC(datos, codificado) {
+    const GEN = '1101';
+    const residuo = codificado.slice(datos.length);
+    const arr = (datos + '0'.repeat(GEN.length - 1)).split('');
+    const gen = GEN.split('');
+
+    let stepsHtml = '<div class="crc-steps">';
+    stepsHtml += `<div class="crc-line"><span class="crc-lbl">Dividendo:</span><span class="crc-bits">${datos}<span style="color:var(--c-yellow)">${'0'.repeat(GEN.length - 1)}</span></span></div>`;
+    stepsHtml += `<div class="crc-line"><span class="crc-lbl">Generador:</span><span class="crc-bits">${GEN}</span></div>`;
+    stepsHtml += '<div class="crc-sep"></div>';
+
+    let step = 0;
+    for (let i = 0; i < datos.length && step < 10; i++) {
+      if (arr[i] === '1') {
+        for (let j = 0; j < gen.length; j++) {
+          arr[i + j] = arr[i + j] !== gen[j] ? '1' : '0';
+        }
+        step++;
+        stepsHtml += `<div class="crc-line"><span class="crc-lbl">Paso ${step}:</span><span class="crc-res">${arr.join('')}</span></div>`;
+      }
+    }
+    stepsHtml += '<div class="crc-sep"></div>';
+    stepsHtml += `<div class="crc-line"><span class="crc-lbl">Residuo:</span><span class="crc-fin">${residuo}</span></div>`;
+    stepsHtml += '</div>';
+    if (datos.length > 10) stepsHtml += `<p style="font-size:0.72rem;color:var(--c-text-muted);margin-top:5px">* Se muestran máximo 10 pasos de división XOR.</p>`;
+
+    const body = `
+      <p class="exp-text">El <strong>CRC (Cyclic Redundancy Check)</strong> trata los datos como un polinomio binario y los divide (XOR) entre un <em>polinomio generador</em> fijo. El residuo de la división — llamado FCS — se adjunta al mensaje. En el receptor, la misma división debe dar residuo cero.</p>
+      <div class="step-row"><span class="step-label">Datos originales:</span><span class="step-val">${datos}</span></div>
+      <div class="step-row"><span class="step-label">Generador (divisor):</span><span class="step-highlight">${GEN}</span></div>
+      <div class="step-row"><span class="step-label">Datos + ${GEN.length - 1} ceros:</span><span class="step-val">${datos}<span style="color:var(--c-yellow)">${'0'.repeat(GEN.length - 1)}</span></span></div>
+      <p style="font-size:0.78rem;color:var(--c-text-muted);margin:12px 0 4px">División XOR bit a bit:</p>
+      ${stepsHtml}
+      <div class="step-row" style="margin-top:10px"><span class="step-label">FCS (residuo) adjunto:</span><span class="step-highlight">${residuo}</span></div>
+      <div class="step-row"><span class="step-label">Código final (TX):</span><span class="step-ok">${codificado}</span></div>`;
+
+    return makeDetails('🔄', '¿Cómo funciona el CRC?', body);
+  }
+
+  /* ── CHECKSUM ── */
+  function explainChecksum(datos, codificado) {
+    const TAM = 8;
+    let bloques = [];
+    for (let i = 0; i < datos.length; i += TAM) bloques.push(datos.slice(i, i + TAM));
+    bloques = bloques.map(b => b.padEnd(TAM, '0'));
+
+    const sumaRaw = bloques.reduce((acc, b) => acc + parseInt(b, 2), 0);
+    const max = (1 << TAM) - 1;
+    let suma = sumaRaw;
+    let carrys = 0;
+    while (suma > max) { suma = (suma & max) + (suma >> TAM); carrys++; }
+    const checksum = (~suma) & max;
+    const csBin = checksum.toString(2).padStart(TAM, '0');
+
+    let blocksHtml = '';
+    bloques.forEach((b, i) => {
+      blocksHtml += `<div class="step-row">
+        <span class="step-label">Bloque ${i + 1}:</span>
+        <span class="step-val">${b}</span>
+        <span style="color:var(--c-text-muted);font-size:0.75rem">= ${parseInt(b, 2)}</span>
+      </div>`;
+    });
+
+    const body = `
+      <p class="exp-text">El <strong>Checksum</strong> suma todos los bloques de datos como enteros, aplica el <em>acarreo circular</em> (wraparound) si la suma supera 8 bits, y calcula el <em>complemento a 1</em>. El receptor suma todo incluyendo el checksum — si el resultado es 0xFF (todo unos), no hay error.</p>
+      ${blocksHtml}
+      <div class="step-row" style="border-top:2px solid var(--c-border);padding-top:8px">
+        <span class="step-label">Suma total:</span>
+        <span class="step-highlight">${sumaRaw}${carrys > 0 ? ` → con acarreo → ${suma}` : ''}</span>
+      </div>
+      <div class="step-row">
+        <span class="step-label">Suma en binario:</span>
+        <span class="step-val">${suma.toString(2).padStart(TAM, '0')}</span>
+      </div>
+      <div class="step-row">
+        <span class="step-label">Complemento a 1 (~):</span>
+        <span class="step-highlight">${csBin}</span>
+        <span style="color:var(--c-text-muted);font-size:0.75rem">= ${checksum}</span>
+      </div>
+      <div class="step-row"><span class="step-label">Código final (TX):</span><span class="step-ok">${codificado}</span></div>`;
+
+    return makeDetails('➕', '¿Cómo funciona el Checksum?', body);
+  }
+
+  /* ── HAMMING ── */
+  function explainHamming(datos, codificado, recibido, tieneError) {
+    const bitsRev = datos.split('').reverse();
+    const datArr  = bitsRev.map(Number);
+    let n = datArr.length, r = 0;
+    while ((1 << r) < n + r + 1) r++;
+    const total = n + r;
+
+    // Build position metadata
+    const positions = [];
+    let posData = 0;
+    for (let i = 1; i <= total; i++) {
+      const isParity = (i & (i - 1)) === 0;
+      positions.push({ pos: i, isParity, dataIdx: isParity ? null : posData++ });
+    }
+
+    // Hamming code reversed (LSB first)
+    const hammingRev = codificado.split('').reverse();
+
+    // Error position (if any)
+    let errorPosInTable = null;
+    if (tieneError) {
+      const { errorPos } = hammingDecoder(recibido);
+      if (errorPos > 0) errorPosInTable = errorPos; // 1-based
+    }
+
+    // Parity coverage
+    const coverage = {};
+    for (let i = 0; i < r; i++) {
+      const mask = 1 << i;
+      const covered = [];
+      for (let j = mask; j <= total; j += mask * 2)
+        for (let k = j; k < Math.min(j + mask, total + 1); k++)
+          covered.push(k);
+      coverage[mask] = covered;
+    }
+
+    // ── Table ──
+    let tableHtml = '<div class="hamming-wrap"><table class="hamming-table"><thead><tr><th>Campo</th>';
+    positions.forEach(p => { tableHtml += `<th style="${p.isParity ? 'color:var(--c-accent)' : ''}">P${p.pos}</th>`; });
+    tableHtml += '</tr></thead><tbody>';
+
+    // Row: Tipo
+    tableHtml += '<tr><td class="row-label">Tipo</td>';
+    positions.forEach(p => {
+      tableHtml += `<td class="${p.isParity ? 'type-p' : 'type-d'}">${p.isParity ? 'P' : 'D'}</td>`;
+    });
+    tableHtml += '</tr>';
+
+    // Row: Valor TX
+    tableHtml += '<tr><td class="row-label">Valor TX</td>';
+    positions.forEach((p, i) => {
+      const cls = p.isParity ? 'type-p' : 'type-d';
+      tableHtml += `<td class="${cls}">${hammingRev[i] ?? '?'}</td>`;
+    });
+    tableHtml += '</tr>';
+
+    // Row: Valor RX (si hay error)
+    if (tieneError) {
+      const rxRev = recibido.split('').reverse();
+      tableHtml += '<tr><td class="row-label">Valor RX</td>';
+      positions.forEach((p, i) => {
+        const isErr = (p.pos === errorPosInTable);
+        tableHtml += `<td class="${p.isParity ? 'type-p' : 'type-d'}${isErr ? ' bit-error' : ''}">${rxRev[i] ?? '?'}${isErr ? ' ⬅' : ''}</td>`;
+      });
+      tableHtml += '</tr>';
+    }
+
+    tableHtml += '</tbody></table></div>';
+
+    // ── Coverage chips ──
+    let coverageHtml = '<div class="coverage-row">';
+    for (let i = 0; i < r; i++) {
+      const mask = 1 << i;
+      const cov  = coverage[mask];
+      coverageHtml += `<div class="coverage-chip"><span class="chip-label">P${mask}:</span>pos. ${cov.join(', ')}</div>`;
+    }
+    coverageHtml += '</div>';
+
+    // ── Error section ──
+    let errorHtml = '';
+    if (tieneError) {
+      const { errorPos, corregido, datos: datosRec } = hammingDecoder(recibido);
+      const sindromeExpl = [];
+      for (let i = 0; i < r; i++) {
+        const mask = 1 << i;
+        const rxRev = recibido.split('').reverse().map(Number);
+        let p = 0;
+        for (let j = mask - 1; j < rxRev.length; j += mask * 2)
+          for (let k = j; k < Math.min(j + mask, rxRev.length); k++)
+            p ^= rxRev[k];
+        sindromeExpl.push(`P${mask}=${p}`);
+      }
+      errorHtml = `
+        <div class="step-row" style="margin-top:10px"><span class="step-label">Señal recibida (RX):</span><span class="step-err">${recibido}</span></div>
+        <div class="step-row"><span class="step-label">Síndrome (paridades RX):</span><span class="step-highlight">${sindromeExpl.join('  ')} → posición ${errorPos}</span></div>
+        <div class="step-row"><span class="step-label">Código corregido:</span><span class="step-ok">${corregido}</span></div>
+        <div class="step-row"><span class="step-label">Datos recuperados:</span><span class="step-ok">${datosRec}</span></div>`;
+    }
+
+    const body = `
+      <p class="exp-text">El <strong>Código de Hamming</strong> inserta <em>bits de paridad</em> en posiciones que son potencias de 2 (1, 2, 4, 8, …). Cada bit de paridad protege un subconjunto específico de posiciones. El receptor recalcula las paridades — su combinación forma el <em>síndrome</em>, que señala exactamente el bit errado.</p>
+      <div class="step-row"><span class="step-label">Datos originales:</span><span class="step-val">${datos}</span><span style="color:var(--c-text-muted);font-size:0.75rem">(${n} bits de dato + ${r} de paridad = ${total} bits totales)</span></div>
+      <div class="step-row"><span class="step-label">Código Hamming (TX):</span><span class="step-ok">${codificado}</span></div>
+
+      <p style="font-size:0.78rem;color:var(--c-text-muted);margin:14px 0 6px">Tabla de posiciones (P=paridad, D=dato):</p>
+      ${tableHtml}
+
+      <p style="font-size:0.78rem;color:var(--c-text-muted);margin:14px 0 6px">Cobertura de cada bit de paridad:</p>
+      ${coverageHtml}
+      ${errorHtml}`;
+
+    return makeDetails('📐', '¿Cómo funciona el Código de Hamming?', body);
+  }
+
+  /* ── CÓDIGO DE LÍNEA ── */
+  function explainLineCodigo(bits, codigo) {
+    const INFO = {
+      'NRZ-L': {
+        emoji: '📶',
+        titulo: 'NRZ-L — Non-Return to Zero Level',
+        desc: 'El nivel de la señal representa directamente el valor del bit: <strong>1 → +1 V</strong>, <strong>0 → −1 V</strong>. La señal no regresa a cero entre bits. Simple, pero sin sincronización automática en cadenas largas del mismo valor.',
+        props: [['Niveles', '2 (+1, −1)'], ['DC', 'Presente si hay más 1s o 0s'], ['Sincronización', 'Pobre (sin transición en bits repetidos)'], ['Uso típico', 'USB, PCIe (variantes)']]
+      },
+      'NRZ-I': {
+        emoji: '🔀',
+        titulo: 'NRZ-I — Non-Return to Zero Inverted',
+        desc: 'La señal <strong>invierte su nivel</strong> al comienzo del período del bit cuando el bit es <strong>1</strong>. Si el bit es <strong>0</strong>, el nivel se mantiene. Más resistente a inversiones de polaridad que NRZ-L.',
+        props: [['Niveles', '2 (+1, −1)'], ['DC', 'Presente'], ['Sincronización', 'Pobre en cadenas de 0s'], ['Uso típico', 'FDDI, USB']]
+      },
+      'AMI': {
+        emoji: '↕️',
+        titulo: 'AMI — Alternate Mark Inversion',
+        desc: 'Los bits <strong>0</strong> se codifican como <strong>0 V</strong>. Los bits <strong>1</strong> alternan entre <strong>+1 V</strong> y <strong>−1 V</strong> en cada ocurrencia. Elimina la componente DC y permite detección de errores (una violación de la alternancia indica error).',
+        props: [['Niveles', '3 (+1, 0, −1)'], ['DC', 'Nulo (balanceado)'], ['Sincronización', 'Pobre en cadenas de 0s'], ['Uso típico', 'T1/E1 (telefonía)']]
+      },
+      'MLT-3': {
+        emoji: '🔃',
+        titulo: 'MLT-3 — Multi-Level Transmit (3 niveles)',
+        desc: 'Usa 3 niveles. Los <strong>0s</strong> no generan transición. Cada <strong>1</strong> avanza al siguiente nivel en un ciclo fijo: <strong>0 → +1 → 0 → −1 → 0 → +1…</strong> Reduce la frecuencia máxima de la señal a ¼ de la tasa de bits, ideal para medios físicos limitados.',
+        props: [['Niveles', '3 (+1, 0, −1)'], ['DC', 'Casi nulo'], ['Sincronización', 'Buena si hay muchos 1s'], ['Uso típico', '100BASE-TX (Fast Ethernet)']]
+      },
+      'Manchester': {
+        emoji: '🔔',
+        titulo: 'Manchester',
+        desc: 'Cada bit tiene una <strong>transición obligatoria en el centro</strong> del período: <strong>1 → de −1 a +1</strong> (flanco de subida), <strong>0 → de +1 a −1</strong> (flanco de bajada). Excelente sincronización, pero usa el doble de ancho de banda que NRZ.',
+        props: [['Niveles', '2 (+1, −1)'], ['DC', 'Nulo'], ['Sincronización', 'Excelente (siempre hay transición)'], ['Uso típico', '10BASE-T Ethernet, IEEE 802.4']]
+      },
+      'Manchester Diferencial': {
+        emoji: '🔔',
+        titulo: 'Manchester Diferencial',
+        desc: 'Siempre hay una transición en el <strong>centro</strong> del período. La diferencia está al <strong>inicio</strong>: <strong>0 → transición al inicio</strong>, <strong>1 → sin transición al inicio</strong>. Es más robusta ante inversiones de polaridad que Manchester estándar.',
+        props: [['Niveles', '2 (+1, −1)'], ['DC', 'Nulo'], ['Sincronización', 'Excelente'], ['Uso típico', 'Token Ring, IEEE 802.5']]
+      }
+    };
+
+    const info = INFO[codigo];
+    if (!info) return '';
+
+    // ── Tabla paso a paso ──
+    let nivelAnterior = -1;
+    let invertido = true;
+    let ultimoNivel = -1;
+    const mlt3 = { nivel: 0, etapa: 0 };
+
+    const rows = [];
+    for (let i = 0; i < bits.length; i++) {
+      const bit = bits[i];
+      let nivel, transicion, detalle;
+
+      if (codigo === 'NRZ-L') {
+        nivel = bit === '1' ? '+1' : '−1';
+        transicion = i === 0 ? '—' : (nivel !== rows[i-1].nivel ? '↕' : '·');
+        detalle = bit === '1' ? 'Nivel alto' : 'Nivel bajo';
+
+      } else if (codigo === 'NRZ-I') {
+        if (bit === '1') nivelAnterior = -nivelAnterior;
+        nivel = nivelAnterior === 1 ? '+1' : '−1';
+        transicion = i === 0 ? '—' : (nivel !== rows[i-1].nivel ? '↕ (inv.)' : '·');
+        detalle = bit === '1' ? 'Inversión de nivel' : 'Sin cambio';
+
+      } else if (codigo === 'AMI') {
+        if (bit === '1') { ultimoNivel *= -1; nivel = ultimoNivel === 1 ? '+1' : '−1'; }
+        else nivel = '0';
+        transicion = i === 0 ? '—' : (nivel !== rows[i-1].nivel ? '↕' : '·');
+        detalle = bit === '1' ? `Marca: ${nivel}` : 'Espacio: 0 V';
+
+      } else if (codigo === 'MLT-3') {
+        if (bit === '1') {
+          mlt3.etapa = (mlt3.etapa + 1) % 4;
+          mlt3.nivel = [0, 1, 0, -1][mlt3.etapa];
+        }
+        nivel = mlt3.nivel === 1 ? '+1' : (mlt3.nivel === -1 ? '−1' : '0');
+        transicion = i === 0 ? '—' : (nivel !== rows[i-1].nivel ? '↕' : '·');
+        detalle = bit === '1' ? `Avanzar ciclo → ${nivel}` : 'Sin cambio';
+
+      } else if (codigo === 'Manchester') {
+        nivel = bit === '1' ? '−1→+1' : '+1→−1';
+        transicion = '↕ (centro)';
+        detalle = bit === '1' ? 'Flanco de subida' : 'Flanco de bajada';
+
+      } else if (codigo === 'Manchester Diferencial') {
+        if (bit === '1') invertido = !invertido;
+        nivel = invertido ? '−1→+1' : '+1→−1';
+        transicion = bit === '0' ? '↕ (inicio + centro)' : '↕ (solo centro)';
+        detalle = bit === '0' ? 'Transición al inicio' : 'Sin transición al inicio';
+      }
+
+      rows.push({ i: i + 1, bit, nivel, transicion, detalle });
+    }
+
+    // ── Propiedades ──
+    let propsHtml = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0">';
+    info.props.forEach(([k, v]) => {
+      propsHtml += `<div style="background:rgba(255,255,255,0.04);border:1px solid var(--c-border);border-radius:6px;padding:6px 12px;font-size:0.75rem">
+        <span style="color:var(--c-text-muted);display:block;font-size:0.68rem;margin-bottom:2px">${k}</span>
+        <span style="color:var(--c-accent2);font-weight:600">${v}</span>
+      </div>`;
+    });
+    propsHtml += '</div>';
+
+    // ── Tabla ──
+    const isMid = codigo === 'Manchester' || codigo === 'Manchester Diferencial';
+    let tableHtml = `
+      <div style="overflow-x:auto;margin-top:12px">
+      <table class="hamming-table">
+        <thead><tr>
+          <th>Bit #</th><th>Valor</th><th>Nivel / Forma</th><th>Transición</th><th>Descripción</th>
+        </tr></thead>
+        <tbody>`;
+    rows.forEach(r => {
+      const bitCls = r.bit === '1' ? 'type-p' : 'type-d';
+      tableHtml += `<tr>
+        <td style="color:var(--c-text-muted)">${r.i}</td>
+        <td class="${bitCls}">${r.bit}</td>
+        <td style="font-family:'JetBrains Mono',monospace;color:var(--c-accent2)">${r.nivel}</td>
+        <td style="color:${r.transicion.includes('↕') ? 'var(--c-yellow)' : 'var(--c-text-muted)'}">${r.transicion}</td>
+        <td style="color:var(--c-text-muted);font-size:0.76rem">${r.detalle}</td>
+      </tr>`;
+    });
+    tableHtml += '</tbody></table></div>';
+
+    const body = `
+      <p class="exp-text">${info.desc}</p>
+      ${propsHtml}
+      <p style="font-size:0.78rem;color:var(--c-text-muted);margin-bottom:6px">Evolución de la señal bit a bit (datos codificados: <span style="color:var(--c-green);font-family:'JetBrains Mono',monospace">${bits}</span>):</p>
+      ${tableHtml}
+      <p style="font-size:0.72rem;color:var(--c-text-muted);margin-top:10px">↕ = transición de nivel &nbsp;·&nbsp; · = nivel sostenido</p>`;
+
+    return makeDetails(info.emoji, `¿Cómo funciona ${info.titulo}?`, body, true);
+  }
 
   // Redibujar canvas al cambiar tamaño de ventana
   window.addEventListener('resize', () => {
